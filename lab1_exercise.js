@@ -7,22 +7,21 @@
 // 
 // OBJECTIVES:
 // - Understand why forEach doesn't work with async operations
+// - Fix the code to wait for results and correctly print summary
+// - Two implementations: using sequential and parallel processing
 // - Use Promise.all() for parallel async processing
-// - Using '.then' chaining, wait for results and correctly print summary
-// - Then rewrite it using async/await syntax (keep the solution which uses
-//                                     .then chaining in the comment!)
 // 
 // ============================================
 
-// Mock API - simulates fetching user data with FIXED delay
+// Mock API - simulates fetching user data with fixed delay
 function fetchUserData(userId) {
     return new Promise((resolve) => {
-        const delay = 1000;  // Fixed 1 second delay for performance comparison
+        const delay = 1000;  // 1 second delay
         setTimeout(() => {
             resolve({
                 id: userId,
                 name: `User ${userId}`,
-                score: userId % 100  // Deterministic score based on userId
+                score: userId % 100  
             });
         }, delay);
     });
@@ -37,7 +36,6 @@ const results = [];
 
 console.log('Starting to fetch users...');
 
-// BUG: forEach doesn't wait for async operations!
 userIds.forEach(userId => {
     fetchUserData(userId).then(userData => {
         results.push(userData);
@@ -58,12 +56,10 @@ console.log(`Total score: ${totalScore}`);
 // TASK 1: Implement fetchSequential() using for...of with await
 // - Fetches users ONE AT A TIME (sequential)
 // - Measure execution time
-// - Expected: ~5000ms (5 users × 1000ms each)
 //
 // TASK 2: Implement fetchParallel() using Promise.all()
 // - Fetches ALL users at once (parallel)
 // - Measure execution time
-// - Expected: ~1000ms (all run simultaneously)
 //
 // TASK 3: Compare performance in main()
 //
@@ -107,11 +103,6 @@ async function main() {
     const parResults = await fetchParallel(userIds);
     const parTotal = parResults.reduce((sum, user) => sum + user.score, 0);
     console.log(`Total users: ${parResults.length}, Total score: ${parTotal}\n`);
-
-    console.log('=== Performance Comparison ===');
-    console.log('Sequential: ~5000ms (one at a time)');
-    console.log('Parallel:   ~1000ms (all at once)');
-    console.log('Speedup:    ~5x faster!');
 }
 
 // Uncomment to run:
@@ -127,7 +118,7 @@ async function main() {
 // Fetched: User 104 (score: 4)
 // Fetched: User 105 (score: 5)
 //
-// Sequential took: 5XXXms
+// Sequential took: ... ms
 // Total users: 5, Total score: 15
 //
 // === Parallel Execution ===
@@ -137,11 +128,6 @@ async function main() {
 // Fetched: User 104 (score: 4)
 // Fetched: User 105 (score: 5)
 //
-// Parallel took: 1XXXms
+// Parallel took: ... ms
 // Total users: 5, Total score: 15
-//
-// === Performance Comparison ===
-// Sequential: ~5000ms (one at a time)
-// Parallel:   ~1000ms (all at once)
-// Speedup:    ~5x faster!
 // ============================================
